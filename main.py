@@ -36,9 +36,8 @@ async def reload(ctx, extension):
 	else:
 		await ctx.send("Вы не разработчик бота!")
 
-for filename in os.listdir("Cogs"):
-	if filename.endswith(".py"):
-		root.load_extension(f"Cogs.{filename[:-3]}")
+async def load_bot():
+	await root.load_extension("/Cogs/Cogs.py")
 
 keep_alive()
 root.run(os.environ.get('TOKEN'))
