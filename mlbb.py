@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from Data.Config import TOKEN
+from keep_alive import keep_alive
 import asyncio
 import os
 
@@ -40,4 +40,5 @@ for filename in os.listdir("Cogs"):
 	if filename.endswith(".py"):
 		root.load_extension(f"Cogs.{filename[:-3]}")
 
-root.run(TOKEN)
+keep_alive()
+root.run(os.environ.get('TOKEN'), bot=True, reconnect=True)
