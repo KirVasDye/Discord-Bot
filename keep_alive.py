@@ -3,7 +3,7 @@ from threading import Thread
 
 app = Flask('app')
 
-@app.rout('/')
+@app.route('/')
 def main():
     return "Это дерьмо работает"
 
