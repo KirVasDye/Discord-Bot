@@ -26,6 +26,7 @@ class User(commands.Cog):
         # hellowned
         @root.event
         async def on_member_join(member: any) -> any:
+            print("on_member_join")
             channel = root.get_channel(1084529482058178601)
             if channel is not None:
                 emb = discord.Embed(description=f'Здравствуйте, ``{member.name}``! '
@@ -37,6 +38,7 @@ class User(commands.Cog):
         # reactrole add
         @root.event
         async def on_raw_reaction_add(payload: any) -> any:
+            print("on_raw_reaction_add")
             channel = root.get_channel(1084474338926919761)
             author = payload.member
             allRoles = [(role.name) for role in payload.member.roles]
@@ -74,6 +76,7 @@ class User(commands.Cog):
 
         @root.event
         async def on_raw_reaction_remove(payload: any) -> any:
+            print("on_raw_reaction_remove")
             message_id = payload.message_id
             if message_id == 1085195964899409930:
                 guild_id = payload.guild_id
@@ -104,6 +107,7 @@ class User(commands.Cog):
         @root.command(pass_context=True)
         @commands.has_permissions(administrator=True)
         async def реакция(ctx: any) -> any:
+            print("реакция")
             await ctx.channel.purge(limit=1)
 
             emb = discord.Embed(title='Выдача ролей', color=0x00FFFF)
@@ -127,6 +131,7 @@ class User(commands.Cog):
         @root.command(pass_context=True)
         @commands.cooldown(1, 10, commands.cooldowns.BucketType.guild)
         async def привет(ctx: any) -> any:
+            print("привет")
             author = ctx.message.author
             await ctx.send(f'``{ author.name }``, привет!')
 
@@ -134,6 +139,7 @@ class User(commands.Cog):
         @commands.has_permissions(administrator=True)
         @commands.cooldown(1, 10, commands.cooldowns.BucketType.guild)
         async def удали(ctx, amount=None):
+            print("удали")
             try:
                 int(amount)
             except Exception as ex:
@@ -149,6 +155,7 @@ class User(commands.Cog):
         @root.command(pass_context=True)
         @commands.cooldown(1, 10, commands.cooldowns.BucketType.guild)
         async def роли(ctx: any) -> any:
+            print("роли")
             author = ctx.message.author
             allRoles = [(role.name) for role in ctx.message.author.roles]
             positionRoles=['Роум', 'Голд', 'Саппорт', 'Эксп', 'Лесник']
