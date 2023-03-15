@@ -44,11 +44,11 @@ async def on_member_remove(member: discord.Member):
 
 # messege edit
 @root.event
-async def on_massege_edit(before: discord.Message, after: discord.Message):
+async def on_message_edit(before: discord.Message, after: discord.Message):
     channel: discord.TextChannel = before.channel
     authtor: discord.Member = before.author
     channel.send(str(authtor.nick) + 'изменил сообщение с\n' + before.content + '\nна\n' + after.content)
-    
+
 # reactrole add
 @root.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
