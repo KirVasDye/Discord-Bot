@@ -1,3 +1,4 @@
+
 import discord
 from discord.ext import commands
 from keep_alive import keep_alive
@@ -8,22 +9,26 @@ from discord.ext.commands import cooldown, BucketType
 import time
 
 PREFIX = 'Фрося ','фрося '
-root=commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all())
-root.remove_command("help")
+root: commands.Bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all())
+root.remove_command('help')
 #---------------------------------------------------------------#
 def toString(list):
     return ", ".join(list)
-
+#---------------------------------------------------------------#
+#---------------------------------------------------------------#
+# Events
 # connection bot
 @root.event
 async def on_ready():
     print('Bot connected!')
+    await root.change_presence (status=discord.Status.online, activity=discord.Game("Не обижайте Фросю"))
+  
 
 # hellowned
 @root.event
-async def on_member_join(member: any) -> any:
+async def on_member_join(member: discord.User):
     print("on_member_join")
-    channel = root.get_channel(1084529482058178601)
+    channel: discord.TextChannel = root.get_channel(1084529482058178601)
     if channel is not None:
         emb = discord.Embed(description=f'Здравствуйте, ``{member.name}``! '
                                                             f'Рады вас видеть. рекомендуем ознакомиться с '
@@ -33,11 +38,11 @@ async def on_member_join(member: any) -> any:
 
 # reactrole add
 @root.event
-async def on_raw_reaction_add(payload: any) -> any:
+async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     print("on_raw_reaction_add")
-    channel = root.get_channel(1084474338926919761)
-    author = payload.member
-    allRoles = [(role.name) for role in payload.member.roles]
+    channel: discord.ChannelType = root.get_channel(1084474338926919761)
+    author: discord.Member = payload.member
+    allRoles: list = [(role.name) for role in author.roles]
     positionRoles = ['Роум', 'Голд', 'Саппорт', 'Эксп', 'Лесник']
     rolesList = list(filter(lambda x: x in allRoles, positionRoles))
     print(rolesList)
@@ -71,7 +76,7 @@ async def on_raw_reaction_add(payload: any) -> any:
         print('Роль не найдена!')
 
 @root.event
-async def on_raw_reaction_remove(payload: any) -> any:
+async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent):
     print("on_raw_reaction_remove")
     message_id = payload.message_id
     if message_id == 1085195964899409930:
@@ -90,7 +95,7 @@ async def on_raw_reaction_remove(payload: any) -> any:
             role = discord.utils.get(guild.roles, name='Лесник')
         else:
             print('У вас больше двух ролей!')
-            role = role = discord.utils.get(guild.roles, name=payload.emoji.name)
+            role = discord.utils.get(guild.roles, name=payload.emoji.name)
 
         if role is not None:
             member = discord.utils.find(lambda m: m.id == payload.user_id, guild.members)
@@ -98,11 +103,14 @@ async def on_raw_reaction_remove(payload: any) -> any:
             await member.remove_roles(role)
     else:
         print('Роль не найдена!')
+#---------------------------------------------------------------#
+#---------------------------------------------------------------#
+# Commands
 
 # !reactrole
 @root.command(pass_context=True)
 @commands.has_permissions(administrator=True)
-async def реакция(ctx: any) -> any:
+async def реакция(ctx: commands.Context) -> any:
     print("реакция")
     await ctx.channel.purge(limit=1)
 
@@ -124,17 +132,21 @@ async def реакция(ctx: any) -> any:
     await message.add_reaction('<:support:1084560175580594377>')
 
 # !hello
-@root.command(pass_context=True)
+@root.command(pass_context=True, aliases=['Hello','Hi',])
 @commands.cooldown(1, 10, commands.cooldowns.BucketType.guild)
-async def привет(ctx: any) -> any:
+async def привет(ctx: commands.Context):
+    author: discord.User = ctx.author
     print("привет")
-    author = ctx.message.author
-    await ctx.send(f'``{ author.name }``, привет!')
+    if author.id == 344890313388851200:
+        await ctx.send(f'``{ author.name }``, пошел нахуй!')
+    else:
+        await ctx.send(f'``{ author.name }``, приветствую уважаемый человек!')
+    
 
 @root.command(pass_context=True)
 @commands.has_permissions(administrator=True)
 @commands.cooldown(1, 10, commands.cooldowns.BucketType.guild)
-async def удали(ctx, amount=None):
+async def удали(ctx: commands.Context, amount=None):
     print("удали")
     try:
         int(amount)
@@ -150,10 +162,10 @@ async def удали(ctx, amount=None):
 
 @root.command(pass_context=True)
 @commands.cooldown(1, 10, commands.cooldowns.BucketType.guild)
-async def роли(ctx: any) -> any:
+async def роли(ctx: commands.Context):
     print("роли")
-    author = ctx.message.author
-    allRoles = [(role.name) for role in ctx.message.author.roles]
+    author: discord.Member = ctx.message.author
+    allRoles = [(role.name) for role in author.roles]
     positionRoles=['Роум', 'Голд', 'Саппорт', 'Эксп', 'Лесник']
     result=list(filter(lambda x: x in allRoles, positionRoles))
     if not result:
@@ -161,5 +173,7 @@ async def роли(ctx: any) -> any:
     else:
         await ctx.send(f'Ваши роли: {toString(result)}')
 #---------------------------------------------------------------#
+#---------------------------------------------------------------#
+# Run
 keep_alive()
 root.run(os.environ.get('TOKEN'))
