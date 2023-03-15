@@ -1,4 +1,3 @@
-
 import discord
 from discord.ext import commands
 from keep_alive import keep_alive
@@ -7,6 +6,7 @@ import os
 from discord.ext.commands import CommandNotFound
 from discord.ext.commands import cooldown, BucketType
 import time
+import random
 
 PREFIX = 'Фрося ','фрося '
 root: commands.Bot = commands.Bot(command_prefix=PREFIX, intents=discord.Intents.all())
@@ -36,11 +36,24 @@ async def on_member_join(member: discord.User):
                                                 , color=0x00FFFF)
         await channel.send(embed=emb)
 
+# member remove
+@root.event
+async def on_member_remove(member: discord.Member):
+    channel: discord.TextChannel = root.get_channel(561578584515543050)
+    channel.send(str(member.nick) + ', покинул нас, соли ему в дорогу.')
+
+# messege edit
+@root.event
+async def on_massege_edit(before: discord.Message, after: discord.Message):
+    channel: discord.TextChannel = before.channel
+    authtor: discord.Member = before.author
+    channel.send(str(authtor.nick) + 'изменил сообщение с\n' + before.content + '\nна\n' + after.content)
+    
 # reactrole add
 @root.event
 async def on_raw_reaction_add(payload: discord.RawReactionActionEvent):
     print("on_raw_reaction_add")
-    channel: discord.ChannelType = root.get_channel(1084474338926919761)
+    channel: discord.TextChannel = root.get_channel(1084474338926919761)
     author: discord.Member = payload.member
     allRoles: list = [(role.name) for role in author.roles]
     positionRoles = ['Роум', 'Голд', 'Саппорт', 'Эксп', 'Лесник']
@@ -132,17 +145,26 @@ async def реакция(ctx: commands.Context) -> any:
     await message.add_reaction('<:support:1084560175580594377>')
 
 # !hello
-@root.command(pass_context=True, aliases=['Hello','Hi',])
+@root.command(pass_context=True, aliases=['Hello',
+                                          'Hi',
+                                          'здарова',
+                                          'здрасте'],)
 @commands.cooldown(1, 10, commands.cooldowns.BucketType.guild)
 async def привет(ctx: commands.Context):
     author: discord.User = ctx.author
     print("привет")
+    variants_list: list = [' пошел нахуй!', 
+                           ' приветствую уважаемый человек!',
+                           ' здравия желаю!',
+                           ' здарова!',
+                           ' привет.']
     if author.id == 344890313388851200:
         await ctx.send(f'``{ author.name }``, пошел нахуй!')
-    else:
+    elif author.id == 577879508552646666:
         await ctx.send(f'``{ author.name }``, приветствую уважаемый человек!')
+    else:
+        await ctx.send(f'``{ author.name }``,' + random.choice(variants_list))
     
-
 @root.command(pass_context=True)
 @commands.has_permissions(administrator=True)
 @commands.cooldown(1, 10, commands.cooldowns.BucketType.guild)
