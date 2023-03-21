@@ -21,7 +21,10 @@ def toString(list):
 @root.event
 async def on_ready():
     print('Bot connected!')
-    await root.change_presence (status=discord.Status.online, activity=discord.Game("Не обижайте Фросю"))
+    await root.change_presence (
+        status=discord.Status.online, 
+        activity=discord.Game("Не обижайте Фросю")
+        )
   
 
 # hellowned
@@ -38,16 +41,26 @@ async def on_member_join(member: discord.User):
 
 # member remove
 @root.event
-async def on_member_remove(member: discord.Member):
+async def on_member_remove(member: discord.User):
     channel: discord.TextChannel = root.get_channel(561578584515543050)
-    channel.send(str(member.nick) + ', покинул нас, соли ему в дорогу.')
+    emb: discord.Embed = discord.Embed(
+        description=f'``{member.name}``, покинул нас, соли ему в дорогу.', 
+        color=0x00FFFF
+        )
+    await channel.send(embed=emb)
 
 # messege edit
 @root.event
 async def on_message_edit(before: discord.Message, after: discord.Message):
     channel: discord.TextChannel = before.channel
-    authtor: discord.Member = before.author
-    await channel.send(str(authtor.nick) + 'изменил сообщение с\n' + before.content + '\nна\n' + after.content)
+    authtor: discord.User = before.author
+    emb: discord.Embed = discord.Embed(description=f'``{authtor.name}`` изменил сообщение с:\n'
+                                       f'{before.content}\n'
+                                       f'на:\n'
+                                       f'{after.content}',
+                                       color=0x00FFFF
+                                       )
+    await channel.send(embed=emb)
 
 # reactrole add
 @root.event
@@ -116,6 +129,13 @@ async def on_raw_reaction_remove(payload: discord.RawReactionActionEvent):
             await member.remove_roles(role)
     else:
         print('Роль не найдена!')
+
+@root.event
+async def on_message(msg: discord.Message):
+    if msg.content.find('пошел') != -1:
+        channel: discord.TextChannel = msg.channel
+        authtor: discord.User = msg.author
+        await channel.send(f'``{authtor.name}``, сам иди туда!')
 #---------------------------------------------------------------#
 #---------------------------------------------------------------#
 # Commands
@@ -153,8 +173,7 @@ async def реакция(ctx: commands.Context) -> any:
 async def привет(ctx: commands.Context):
     author: discord.User = ctx.author
     print("привет")
-    variants_list: list = [' пошел нахуй!', 
-                           ' приветствую уважаемый человек!',
+    variants_list: list = [' приветствую уважаемый человек!',
                            ' здравия желаю!',
                            ' здарова!',
                            ' привет.']
